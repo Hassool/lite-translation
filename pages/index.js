@@ -1,7 +1,7 @@
 import { useTranslation } from '../src/TranslationProvider';
 import LangSwitcher from '../components/LangSwitcher';
 import Link from 'next/link';
-import Card from '@/components/Card';
+import Card from '../components/Card';
 
 export default function About() {
   const { t, isRTL } = useTranslation();
