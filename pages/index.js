@@ -1,6 +1,7 @@
 import { useTranslation } from '../src/TranslationProvider';
 import LangSwitcher from '../components/LangSwitcher';
 import Link from 'next/link';
+import Card from '@/components/Card';
 
 export default function About() {
   const { t, isRTL } = useTranslation();
@@ -24,7 +25,7 @@ export default function About() {
               title={t('home.features.lightweight.title')} 
               content={t('home.features.lightweight.description')}
             />
-            <Card 
+            <Card
               title={t('home.features.fast.title')} 
               content={t('home.features.fast.description')}
             />
