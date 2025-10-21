@@ -19,45 +19,28 @@ export default function About() {
           </div>
         </div>
       </header>
-
-      <main className="main-content">
-        <div className="container about-container">
-          <section className="about-hero">
-            <h1 className="page-title">{t('about.title')}</h1>
-            <p className="page-subtitle">{t('about.content')}</p>
+      <section className="features">
+            <Card 
+              title={t('home.features.lightweight.title')} 
+              content={t('home.features.lightweight.description')}
+            />
+            <Card 
+              title={t('home.features.fast.title')} 
+              content={t('home.features.fast.description')}
+            />
+            <Card 
+              title={t('home.features.rtl.title')} 
+              content={t('home.features.rtl.description')}
+            />
           </section>
-
-          <section className="about-section">
-            <h2 className="section-title">{t('about.mission.title')}</h2>
-            <p className="section-text">{t('about.mission.description')}</p>
-          </section>
-
-          <section className="about-section">
-            <h2 className="section-title">{t('about.why.title')}</h2>
-            <div className="reason-grid">
-              {t('about.why.reasons', []).map((reason, index) => (
-                <div key={index} className="reason-card">
-                  <h3>{reason.title}</h3>
-                  <p>{reason.description}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="about-section">
+          <section className="cta">
+            <Link href="/about" className="btn btn-primary">
+              {t('home.cta.learnMore')} →
+            </Link>
             <h2 className="section-title">{t('about.features.title')}</h2>
             <ul className="feature-list">
               {t('about.features.list', []).map((feature, index) => (
                 <li key={index}>{feature}</li>
-              ))}
-            </ul>
-          </section>
-
-          <section className="about-section">
-            <h2 className="section-title">{t('about.usage.title')}</h2>
-            <ul className="usage-list">
-              {t('about.usage.items', []).map((item, index) => (
-                <li key={index}>{item}</li>
               ))}
             </ul>
           </section>
@@ -69,14 +52,17 @@ export default function About() {
               rel="noopener noreferrer"
               className="btn btn-primary btn-large"
             >
-              {t('about.getStarted')}
+              {t('home.cta.viewGithub')}
             </a>
-            <Link href="/" className="btn btn-secondary">
-              ← {t('about.backToHome')}
-            </Link>
           </section>
-        </div>
-      </main>
+          <section className="demo-info">
+            <div className="info-card">
+              <p><strong>{t('home.demo.currentLanguage')}:</strong> {lang.toUpperCase()}</p>
+              <p><strong>{t('home.demo.direction')}:</strong> {isRTL ? 'RTL' : 'LTR'}</p>
+              <p><strong>{t('home.demo.status')}:</strong> ✅ {t('home.demo.active')}</p>
+            </div>
+          </section>
+
 
       <footer className="footer">
         <div className="container">
