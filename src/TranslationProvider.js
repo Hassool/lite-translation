@@ -12,10 +12,10 @@ export function TranslationProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   const [translationCache, setTranslationCache] = useState({});
 
+  // 🔹 Load translations (with memory caching)
   const loadTranslations = useCallback(async (language) => {
     setIsLoading(true);
 
-    // Check in-memory cache first
     if (TRANSLATION_CONFIG.ENABLE_CACHING && translationCache[language]) {
       setTranslations(translationCache[language]);
       setIsLoading(false);
@@ -24,44 +24,38 @@ export function TranslationProvider({ children }) {
 
     try {
       const res = await fetch(`${TRANSLATION_CONFIG.API_ENDPOINT}?lang=${language}`);
-      
-      if (!res.ok) {
-        throw new Error(`Failed to fetch translations: ${res.status}`);
-      }
-      
+      if (!res.ok) throw new Error(`Failed to fetch translations: ${res.status}`);
       const data = await res.json();
 
-      // Store in memory cache
       if (TRANSLATION_CONFIG.ENABLE_CACHING) {
-        setTranslationCache(prev => ({
-          ...prev,
-          [language]: data
-        }));
+        setTranslationCache(prev => ({ ...prev, [language]: data }));
       }
-      
+
       setTranslations(data);
     } catch (e) {
       console.error('Translation load error:', e);
-      // Fallback to default module translations
-      const fallbackTranslations = Object.keys(modules).reduce((acc, key) => {
+      const fallback = Object.keys(modules).reduce((acc, key) => {
         acc[key] = modules[key].default;
         return acc;
       }, {});
-      setTranslations(fallbackTranslations);
+      setTranslations(fallback);
     } finally {
       setIsLoading(false);
     }
   }, [translationCache]);
 
-  const changeLanguage = useCallback((newLang) => {
+  // 🔹 Change language instantly (fix: wait for load to complete)
+  const changeLanguage = useCallback(async (newLang) => {
     if (!TRANSLATION_CONFIG.AVAILABLE_LANGUAGES.includes(newLang)) {
       console.warn(`Language "${newLang}" is not available. Using default.`);
       newLang = TRANSLATION_CONFIG.DEFAULT_LANGUAGE;
     }
 
     if (newLang === lang) return;
-    
-    setLang(newLang);
+
+    setIsLoading(true);
+    await loadTranslations(newLang); 
+    setLang(newLang);               
 
     if (typeof document !== 'undefined') {
       document.documentElement.lang = newLang;
@@ -70,31 +64,28 @@ export function TranslationProvider({ children }) {
       document.documentElement.classList.toggle('rtl', isRTL);
     }
 
-    loadTranslations(newLang);
+    setIsLoading(false);
   }, [lang, loadTranslations]);
 
   useEffect(() => {
-    const initialLang = TRANSLATION_CONFIG.DEFAULT_LANGUAGE;
-    setLang(initialLang);
+    const storedLang =
+      typeof window !== 'undefined'
+        ? localStorage.getItem('lang') || TRANSLATION_CONFIG.DEFAULT_LANGUAGE
+        : TRANSLATION_CONFIG.DEFAULT_LANGUAGE;
 
-    if (typeof document !== 'undefined') {
-      document.documentElement.lang = initialLang;
-      const isRTL = TRANSLATION_CONFIG.RTL_LANGUAGES.includes(initialLang);
-      document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
-      document.documentElement.classList.toggle('rtl', isRTL);
-    }
+    setLang(storedLang);
+    document.documentElement.lang = storedLang;
+    const isRTL = TRANSLATION_CONFIG.RTL_LANGUAGES.includes(storedLang);
+    document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+    document.documentElement.classList.toggle('rtl', isRTL);
 
-    loadTranslations(initialLang);
+    loadTranslations(storedLang);
   }, [loadTranslations]);
 
+  // 🔹 Translation function
   const t = useCallback((key, defaultValue = key) => {
     if (isLoading) return defaultValue;
-
-    const getValue = (obj) => {
-      if (!obj) return null;
-      return key.split('.').reduce((acc, k) => acc?.[k], obj);
-    };
-
+    const getValue = (obj) => key.split('.').reduce((acc, k) => acc?.[k], obj);
     return getValue(translations) ?? getValue(modules.x?.default) ?? defaultValue;
   }, [isLoading, translations]);
 
@@ -113,15 +104,20 @@ export function TranslationProvider({ children }) {
         languageNames: TRANSLATION_CONFIG.LANGUAGE_NAMES
       }}
     >
-      {children}
+      {isLoading ? (
+        <div className="translation-loader">
+          <div className="spinner"></div>
+          <p>Loading translations...</p>
+        </div>
+      ) : (
+        children
+      )}
     </TranslationContext.Provider>
   );
 }
 
 export function useTranslation() {
   const context = useContext(TranslationContext);
-  if (!context) {
-    throw new Error('useTranslation must be used within TranslationProvider');
-  }
+  if (!context) throw new Error('useTranslation must be used within TranslationProvider');
   return context;
 }
