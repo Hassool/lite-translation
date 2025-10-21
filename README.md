@@ -17,6 +17,10 @@ A lightweight, dependency-free translation system for React and Next.js applicat
 - **🎨 Modular** - Organize translations by feature/module
 - **🚫 No localStorage** - Pure state management, SSR-friendly
 
+## 💡 Why Lite Translation?
+
+While building a web app [benzene 1.0](https://benzene-beta.vercel.app/) , I needed a simple translation engine — but popular libraries like react-i18next felt too heavy and complex for smaller projects. So I built Lite Translation, a lightweight, dependency-free alternative that’s easy to set up, fast, and perfect for projects that don’t need a full i18n framework.
+
 ## 📦 Installation
 
 ```bash
@@ -273,3 +277,4 @@ Built with ❤️ for the React community
 ---
 
 **Star this repo if you find it useful!** ⭐
+Designed for developers who value simplicity, speed, and clean code.
