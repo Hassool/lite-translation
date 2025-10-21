@@ -1,10 +1,14 @@
+
 import { useTranslation } from '../src/TranslationProvider';
+import Loader from '../components/Loader';
 import LangSwitcher from '../components/LangSwitcher';
-import Link from 'next/link';
 import Card from '../components/Card';
+import Link from 'next/link';
 
 export default function Home() {
-  const { t, isRTL } = useTranslation();
+  const { t, isLoading, isRTL, lang } = useTranslation();
+
+  if (isLoading) return <Loader />;
 
   return (
     <div className="page-wrapper">
