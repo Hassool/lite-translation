@@ -14,23 +14,6 @@ export default function About() {
               <img src="/favicon.ico" alt="Logo" className="brand-icon" />
               <h1 className="brand">{t('x.brand')}</h1>
             </Link>
-            
-            <nav className="nav">
-              <Link href="/" className="nav-link">
-                {t('nav.home')}
-              </Link>
-              <Link href="/about" className="nav-link active">
-                {t('nav.about')}
-              </Link>
-              <a 
-                href="https://github.com/Hassool/lite-translation" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="nav-link"
-              >
-                {t('nav.github')}
-              </a>
-            </nav>
 
             <LangSwitcher />
           </div>
