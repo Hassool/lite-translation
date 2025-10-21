@@ -10,7 +10,10 @@ export default function About() {
       <header className="header">
         <div className="container">
           <div className="header-content">
-            <h1 className="brand">{t('x.brand')}</h1>
+            <Link href="/" className="brand-link">
+              <img src="/favicon.ico" alt="Logo" className="brand-icon" />
+              <h1 className="brand">{t('x.brand')}</h1>
+            </Link>
             <LangSwitcher />
           </div>
         </div>
@@ -60,7 +63,7 @@ export default function About() {
 
           <section className="about-cta">
             <a 
-              href="https://github.com/yourusername/lite-translation" 
+              href="https://github.com/Hassool/lite-translation" 
               target="_blank" 
               rel="noopener noreferrer"
               className="btn btn-primary btn-large"
