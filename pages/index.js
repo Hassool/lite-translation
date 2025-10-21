@@ -1,4 +1,3 @@
-
 import { useTranslation } from '../src/TranslationProvider';
 import Loader from '../components/Loader';
 import LangSwitcher from '../components/LangSwitcher';
@@ -16,7 +15,14 @@ export default function Home() {
         <div className="container">
           <div className="header-content">
             <Link href="/" className="brand-link">
-              <img src="/favicon.ico" alt="Logo" className="brand-icon" />
+              <img 
+                src="/favicon.ico" 
+                alt="Logo" 
+                className="brand-icon"
+                style={{
+                  filter: 'drop-shadow(0 4px 8px rgba(0, 112, 243, 0.25)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))'
+                }}
+              />
               <h1 className="brand">{t('x.brand')}</h1>
             </Link>
 
