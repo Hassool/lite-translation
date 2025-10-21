@@ -44,8 +44,7 @@ export function TranslationProvider({ children }) {
     }
   }, [translationCache]);
 
-  // 🔹 Change language instantly (fix: wait for load to complete)
-  const changeLanguage = useCallback(async (newLang) => {
+    const changeLanguage = useCallback(async (newLang) => {
     if (!TRANSLATION_CONFIG.AVAILABLE_LANGUAGES.includes(newLang)) {
       console.warn(`Language "${newLang}" is not available. Using default.`);
       newLang = TRANSLATION_CONFIG.DEFAULT_LANGUAGE;
@@ -53,7 +52,6 @@ export function TranslationProvider({ children }) {
 
     if (newLang === lang) return;
 
-    setIsLoading(true);
     await loadTranslations(newLang); 
     setLang(newLang);               
 
@@ -63,8 +61,6 @@ export function TranslationProvider({ children }) {
       document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
       document.documentElement.classList.toggle('rtl', isRTL);
     }
-
-    setIsLoading(false);
   }, [lang, loadTranslations]);
 
   useEffect(() => {
