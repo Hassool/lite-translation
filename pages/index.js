@@ -3,7 +3,7 @@ import LangSwitcher from '../components/LangSwitcher';
 import Link from 'next/link';
 import Card from '../components/Card';
 
-export default function About() {
+export default function Home() {
   const { t, isRTL } = useTranslation();
 
   return (
