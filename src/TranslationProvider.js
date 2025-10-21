@@ -9,16 +9,16 @@ const TranslationContext = createContext();
 export function TranslationProvider({ children }) {
   const [lang, setLang] = useState(TRANSLATION_CONFIG.DEFAULT_LANGUAGE);
   const [translations, setTranslations] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [translationCache, setTranslationCache] = useState({});
 
   // 🔹 Load translations (with memory caching)
-  const loadTranslations = useCallback(async (language) => {
-    setIsLoading(true);
+  const loadTranslations = useCallback(async (language, isInitial = false) => {
+    if (isInitial) setIsInitialLoad(true);
 
     if (TRANSLATION_CONFIG.ENABLE_CACHING && translationCache[language]) {
       setTranslations(translationCache[language]);
-      setIsLoading(false);
+      if (isInitial) setIsInitialLoad(false);
       return;
     }
 
@@ -40,11 +40,12 @@ export function TranslationProvider({ children }) {
       }, {});
       setTranslations(fallback);
     } finally {
-      setIsLoading(false);
+      if (isInitial) setIsInitialLoad(false);
     }
   }, [translationCache]);
 
-    const changeLanguage = useCallback(async (newLang) => {
+  // 🔹 Change language instantly (no loading screen)
+  const changeLanguage = useCallback(async (newLang) => {
     if (!TRANSLATION_CONFIG.AVAILABLE_LANGUAGES.includes(newLang)) {
       console.warn(`Language "${newLang}" is not available. Using default.`);
       newLang = TRANSLATION_CONFIG.DEFAULT_LANGUAGE;
@@ -52,8 +53,12 @@ export function TranslationProvider({ children }) {
 
     if (newLang === lang) return;
 
-    await loadTranslations(newLang); 
-    setLang(newLang);               
+    await loadTranslations(newLang, false); 
+    setLang(newLang);
+    
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lang', newLang);
+    }
 
     if (typeof document !== 'undefined') {
       document.documentElement.lang = newLang;
@@ -75,15 +80,14 @@ export function TranslationProvider({ children }) {
     document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
     document.documentElement.classList.toggle('rtl', isRTL);
 
-    loadTranslations(storedLang);
+    loadTranslations(storedLang, true);
   }, [loadTranslations]);
 
   // 🔹 Translation function
   const t = useCallback((key, defaultValue = key) => {
-    if (isLoading) return defaultValue;
     const getValue = (obj) => key.split('.').reduce((acc, k) => acc?.[k], obj);
     return getValue(translations) ?? getValue(modules.x?.default) ?? defaultValue;
-  }, [isLoading, translations]);
+  }, [translations]);
 
   const isRTL = TRANSLATION_CONFIG.RTL_LANGUAGES.includes(lang);
 
@@ -92,7 +96,7 @@ export function TranslationProvider({ children }) {
       value={{
         lang,
         translations,
-        isLoading,
+        isLoading: isInitialLoad,
         changeLanguage,
         isRTL,
         t,
@@ -100,7 +104,7 @@ export function TranslationProvider({ children }) {
         languageNames: TRANSLATION_CONFIG.LANGUAGE_NAMES
       }}
     >
-      {isLoading ? (
+      {isInitialLoad ? (
         <div className="translation-loader">
           <div className="spinner"></div>
           <p>Loading translations...</p>
